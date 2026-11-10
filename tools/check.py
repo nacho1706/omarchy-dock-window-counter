@@ -24,13 +24,15 @@ for entry in manifest['entryPoints'].values():
 for path in root.rglob('*'):
     if '.git' not in path.relative_to(root).parts:
         assert not path.is_symlink(), path
-for name in ['README.md', 'LICENSE', 'dock/LICENSE', 'THIRD_PARTY_NOTICES.md', 'preview.png']:
+for name in ['README.md', 'LICENSE', 'UPSTREAM_LICENSE', 'THIRD_PARTY_NOTICES.md', 'preview.png']:
     assert (root / name).is_file(), name
 readme = (root / 'README.md').read_text()
 assert 'omarchy plugin add https://github.com/nacho1706/omarchy-dock-window-counter' in readme
 assert 'omarchy plugin remove chato.floating-apps' in readme
 assert '<public-github-repository-url>' not in readme
-for snippet, target in [('workspace-helper.js', 'DockModel.js'), ('indicator.qml', 'DockWindow.qml'), ('terminal-resolver.qml', 'Dock.qml')]:
-    assert (root / 'tools' / snippet).read_text().strip() in (root / 'dock' / target).read_text(), snippet + ' differs from bundled dock'
+for name in ['Service.qml', 'CounterWindow.qml', 'Model.js']:
+    code = (root / name).read_text()
+    assert 'serviceFor(' not in code and 'firstPartyServiceFor(' not in code, name + ' controls another service'
+assert 'omarchy' not in manifest, 'overlay must not replace a dock service'
 assert 'https://github.com/nacho1706/omarchy-dock-window-counter' == manifest['homepage']
-print('Release structure, manifest, documentation, and adapter resources: OK')
+print('Release structure, manifest, documentation, and independent overlay: OK')

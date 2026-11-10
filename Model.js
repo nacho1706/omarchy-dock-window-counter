@@ -77,7 +77,7 @@ function claimingEntryId(appId, entries) {
 // the entry that claims it.
 function buildItems(pinned, windows) {
   var items = []
-  var byKey = {}
+  var byKey = Object.create(null)
 
   function itemFor(key, isPinned) {
     if (!byKey[key]) {
@@ -99,99 +99,8 @@ function buildItems(pinned, windows) {
   return items
 }
 
-// Puts the items in the dock's own order, which the dock keeps for the
-// session: an app keeps its slot while it stays in the dock, and an app that
-// joins goes at the end. Items the order does not know yet follow in the order
-// buildItems gave them.
-function orderItems(items, order) {
-  var byKey = {}
-  for (var i = 0; i < (items || []).length; i++) byKey[items[i].key] = items[i]
-  var result = []
-  var placed = {}
-  for (var j = 0; j < (order || []).length; j++) {
-    var key = order[j]
-    if (byKey[key] && !placed[key]) {
-      result.push(byKey[key])
-      placed[key] = true
-    }
-  }
-  for (var k = 0; k < (items || []).length; k++) {
-    if (!placed[items[k].key]) result.push(items[k])
-  }
-  return result
-}
-
-// The order with key moved to index, counted once key has left its old slot.
-function orderWithKeyAt(order, key, index) {
-  var keys = (order || []).filter(function(other) { return other !== key })
-  keys.splice(Math.max(0, Math.min(keys.length, index)), 0, key)
-  return keys
-}
-
-// Where a dragged icon lands: its own slot moved by however many slots the
-// pointer has travelled, kept within the dock.
-function dropIndex(fromIndex, offset, slotSize, count) {
-  if (count <= 0 || !(slotSize > 0)) return fromIndex
-  var target = fromIndex + Math.round(offset / slotSize)
-  return Math.max(0, Math.min(count - 1, target))
-}
-
-// The pins to save for the dock's order: the pinned apps in that order, then
-// pins the dock is not showing, because their app is not installed, as they
-// were. pinned holds the pinned desktop ids as keys.
-function pinsInOrder(order, pinned, allPinned) {
-  var result = (order || []).filter(function(key) { return pinned[key] === true })
-  for (var i = 0; i < (allPinned || []).length; i++) {
-    if (result.indexOf(allPinned[i]) === -1 && (order || []).indexOf(allPinned[i]) === -1) result.push(allPinned[i])
-  }
-  return result
-}
-
-// The window a click on an app brings forward. Windows on the workspace in
-// front of the user come first, then minimized ones, which come back to it,
-// and only then those on other workspaces. Clicking again while one of them
-// is focused moves on to the next in that order. Windows are
-// { workspaceId, minimized, activated }.
-function pickWindow(windows, workspaceId) {
-  var list = windows || []
-  if (list.length === 0) return -1
-
-  function rank(window) {
-    if (window.minimized) return 1
-    return window.workspaceId === workspaceId ? 0 : 2
-  }
-
-  var order = list.map(function(window, index) { return index })
-  order.sort(function(a, b) { return rank(list[a]) - rank(list[b]) || a - b })
-
-  for (var i = 0; i < order.length; i++) {
-    if (list[order[i]].activated) return order[(i + 1) % order.length]
-  }
-  return order[0]
-}
-
-
-if (typeof module !== "undefined") {
-  module.exports = {
-    normalizePosition: normalizePosition,
-    isVertical: isVertical,
-    normalizeId: normalizeId,
-    pinnedIds: pinnedIds,
-    isDockWindow: isDockWindow,
-    isMinimizedWorkspace: isMinimizedWorkspace,
-    claimingEntryId: claimingEntryId,
-    buildItems: buildItems,
-    orderItems: orderItems,
-    orderWithKeyAt: orderWithKeyAt,
-    dropIndex: dropIndex,
-    pinsInOrder: pinsInOrder,
-    pickWindow: pickWindow
-  }
-}
-
-
-// Floating Apps: one monitor's active workspace only. Minimized windows keep
-// their origin in stock Omarchy or Genie tags; never infer it from global focus.
+// Dock Window Counter: one monitor's active workspace only. Minimized windows keep
+// their origin in stock Omarchy tags; never infer it from global focus.
 function workspaceCount(toplevels, key, workspaceId, entryForAppId) {
   if (!(workspaceId > 0)) return 0
   var count = 0
@@ -207,9 +116,8 @@ function workspaceCount(toplevels, key, workspaceId, entryForAppId) {
     var tags = (h.lastIpcObject || {}).tags || []
     var origin = -1
     for (var j = 0; j < tags.length; j++) {
-      var match = String(tags[j]).match(/^genie-workspace-([1-9][0-9]*)$/)
-      if (match) { origin = Number(match[1]); break }
-      match = String(tags[j]).match(/^omarchy-minimized-from-([1-9][0-9]*)$/)
+      var match = String(tags[j]).match(/^omarchy-minimized-from-([1-9][0-9]*)$/)
+        || String(tags[j]).match(/^[a-z0-9]+-workspace-([1-9][0-9]*)$/)
       if (match) origin = Number(match[1])
     }
     if (origin === workspaceId) count++
@@ -223,7 +131,9 @@ function canonicalAppId(appId, terminalId) {
   return appId === "org.omarchy.agent" && terminalId ? terminalId : appId
 }
 
-if (typeof module !== "undefined") {
-  module.exports.workspaceCount = workspaceCount
-  module.exports.canonicalAppId = canonicalAppId
+if (typeof module !== "undefined") module.exports = {
+  normalizePosition: normalizePosition, isVertical: isVertical, normalizeId: normalizeId,
+  pinnedIds: pinnedIds, isDockWindow: isDockWindow, isMinimizedWorkspace: isMinimizedWorkspace,
+  claimingEntryId: claimingEntryId, buildItems: buildItems,
+  workspaceCount: workspaceCount, canonicalAppId: canonicalAppId
 }

@@ -6,7 +6,7 @@ Name: Dock Window Counter
 
 Plugin ID: `chato.floating-apps`
 
-Version: `1.0.3`
+Version: `1.1.0`
 
 Category: `Desktop`
 
@@ -20,9 +20,9 @@ The ready-to-review issue body is `MARKETPLACE_SUBMISSION.md`. Its checklist is 
 
 ## Before submission
 
-1. Confirm repository visibility, green CI, and the `v1.0.3` release.
+1. Confirm repository visibility, green CI, and the `v1.1.0` release.
 2. Recheck `chato.floating-apps` against the published catalog and retired IDs; the ID was absent from both when prepared on 2026-11-10.
 3. Review `MARKETPLACE_SUBMISSION.md`, confirm all five checklist statements, then check each box.
 4. Submit with the exact title and body through the [official publishing guide](https://plugins.omarchy.org/publish.html). Marketplace maintainers run compatibility and security-baseline checks before approval.
 
-The repository contains one root plugin manifest, a root README/license, a dock-only preview, and preserved upstream attribution in `dock/LICENSE` and `THIRD_PARTY_NOTICES.md`.
+The repository contains one root plugin manifest, a root README/license, a dock-only preview, and preserved upstream attribution in `UPSTREAM_LICENSE` and `THIRD_PARTY_NOTICES.md`.

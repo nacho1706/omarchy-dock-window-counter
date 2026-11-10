@@ -1,33 +1,33 @@
 # Dock Window Counter
 
-Window counts and running indicators for Omarchy's native **floating dock**—the bottom-center app strip. Indicators count windows on **the active workspace**, independently on each monitor.
+Window counts for apps on the **current workspace**, drawn over Omarchy's existing floating dock.
 
-![Floating dock with workspace-local indicators](preview.png)
+![Workspace-local count badges over the existing dock](preview.png)
 
-- One local window: an outlined white dot below the app icon.
-- Two or more local windows: the exact count in a dark badge at the icon’s lower-right corner.
-- No local windows: no marker, and the app icon stays dimmed.
-- Minimized windows count on their original workspace, using stock Omarchy or Genie origin tags.
+- One window: an outlined white dot below the app icon.
+- Multiple windows: a dark badge with the exact count.
+- No windows on this workspace: no marker.
+- Each monitor follows its own active workspace.
+- Minimized windows count on their saved original workspace when that metadata is available.
 - Omarchy agent terminal windows count with the configured terminal app; dedicated TUI app identities stay separate.
-- Browser tabs are not separate windows; child dialogs and scratchpads are excluded.
 
-The dock keeps its native pins, menus, app grid, dragging, launch and activation behavior. Icons may still be present for apps running elsewhere; only the indicator and running brightness are workspace-local.
-
-The stable plugin ID remains `chato.floating-apps` for compatibility with existing installations.
+This is an independent indicator overlay. It draws no app icons, creates no dock, handles no clicks, launches no apps, and modifies no other plugin. Its empty input region lets clicks, hover, dragging, and minimize/restore interactions pass through to the dock underneath.
 
 ## Requirements
 
-Omarchy Quattro with the Quickshell shell and Hyprland Lua dispatchers. This plugin includes an MIT-licensed snapshot of Omarchy's native dock and uses its existing theme, icon, translation, animation and reduced-motion APIs. No extra runtime dependencies, network requests, background polling, or privileged operations. Python 3 is required only for the optional Genie adapter; Node.js is required only for model tests.
+Omarchy Quattro with the Quickshell shell and an already-visible dock using Omarchy's native icon sizes, slot spacing, pins, and ordering. The overlay reads public dock settings and Hyprland window metadata. Other dock layouts are not supported.
 
-## Install on stock Omarchy
+No extra runtime packages, network requests, privileged commands, or polling. The existing `xdg-terminal-exec --print-id` command is called once to identify the configured terminal; it does not launch one. Python 3 and Node.js are development-only dependencies for checks.
+
+## Install
 
 ```sh
 omarchy plugin add https://github.com/nacho1706/omarchy-dock-window-counter --enable
 ```
 
-The manifest declares a clone of `omarchy.dock`, so Omarchy disables the stock dock when enabling Dock Window Counter and restores it on removal when appropriate. Your top status bar is unaffected. Dock placement, pins, and autohide continue to use Omarchy's normal dock settings.
+The stable plugin ID is `chato.floating-apps`. This plugin can remain enabled alongside the separate service that provides your dock. It never enables, disables, patches, or replaces that service.
 
-For a local checkout, copy this folder (not a symlink) to `~/.config/omarchy/plugins/chato.floating-apps/`, then:
+For a local checkout, copy this folder to `~/.config/omarchy/plugins/chato.floating-apps/`, then:
 
 ```sh
 omarchy plugin validate ~/.config/omarchy/plugins/chato.floating-apps
@@ -35,21 +35,11 @@ omarchy-shell shell rescanPlugins
 omarchy plugin enable chato.floating-apps
 ```
 
-If discovery has not finished yet, retry enable once the plugin appears in `omarchy plugin list`.
+## Visibility and layout
 
-## Install with Genie 0.2.4
+Indicators appear on floating workspaces. They are hidden for maximized/fullscreen workspaces and when dock autohide is enabled: the dock's reveal state is private, so this avoids leaving markers above a hidden dock. Disable dock autohide to use the overlay.
 
-Genie already owns an extended native dock and its animation targets. Dock Window Counter detects that enabled service and avoids creating another dock. Apply the optional adapter to Genie's **user-owned** dock copy:
-
-```sh
-python3 ~/.config/omarchy/plugins/chato.floating-apps/tools/genie-adapter.py
-omarchy plugin enable chato.floating-apps
-omarchy restart shell
-```
-
-The adapter validates expected source anchors and backs up changed dock files as `*.before-floating-apps-<timestamp>` before editing. Unknown source layouts are refused without changes. It is idempotent and adds self-contained indicator code; disabling/removing Dock Window Counter makes that code dormant. It never edits packaged Omarchy files. Restarting the shell applies nested dock QML/JS changes and clears any in-memory Genie animation snapshots.
-
-The adapter preserves Genie's native activation and minimize/restore behavior. Updates to Genie may replace its dock files; rerun the adapter afterward. Other third-party dock replacements require their own integration and are not supported.
+Positions are calculated from Omarchy's native dock geometry and current pins. Markers settle into their final positions after reordering; they do not follow an icon while it is being dragged or magnified on hover. The project does not control the underlying dock's brightness or activation behavior.
 
 ## Disable or remove
 
@@ -58,7 +48,7 @@ omarchy plugin disable chato.floating-apps
 omarchy plugin remove chato.floating-apps
 ```
 
-With Genie, the adapter remains inert and the original running-icon behavior returns. To remove the adapter source entirely, restore the changed Genie dock files from their matching `before-floating-apps` backups (Dock.qml, DockWindow.qml, and DockModel.js), then restart the shell. Restore only if there have been no intervening edits you want to retain.
+Only the overlay disappears. No other project's code or settings need restoring.
 
 ## Validation
 
@@ -66,15 +56,13 @@ With Genie, the adapter remains inert and the original running-icon behavior ret
 omarchy plugin validate .
 python3 tools/check.py
 node test/workspace.test.cjs
-python3 -m unittest discover -s test -p 'test_*.py' -v
-/usr/lib/qt6/bin/qmllint --max-warnings 10000 Service.qml dock/Dock.qml dock/DockWindow.qml dock/AppGrid.qml
-python3 -m py_compile tools/genie-adapter.py
+/usr/lib/qt6/bin/qmllint --max-warnings 10000 Service.qml CounterWindow.qml
 ```
 
-The Qt 6 linter checks syntax but emits unresolved `qs.*` host-import and inherited native-code warnings outside the running shell; live loading is checked separately. The Qt 5 `qmllint` on PATH cannot parse the upstream native Dock.qml.
+Qt 6 syntax checking emits unresolved Omarchy host-import warnings outside the running shell. See `VERIFICATION.md` for live checks and limits.
 
-Model tests cover workspace isolation, duplicate counts, stock and Genie minimized origins, stale tags, desktop entry aliases, moves, and closures. The added indicator uses plain text and localized numbers; all copied dock text sinks use plain text. See `VERIFICATION.md` for the live checks and remaining coverage.
+## License and marketplace
 
-## Marketplace
+Original overlay code is MIT-licensed. The app-ordering model is adapted from Omarchy's native dock; its copyright and license are preserved in `UPSTREAM_LICENSE` and `THIRD_PARTY_NOTICES.md`.
 
-One plugin, root manifest, README, preview, MIT license, third-party attribution and documented safe removal are included. See `MARKETPLACE.md` for publishing metadata and remaining steps. The public repository and tagged release are hosted at [nacho1706/omarchy-dock-window-counter](https://github.com/nacho1706/omarchy-dock-window-counter). Marketplace listing requires a separate submission and maintainer approval.
+The [public repository](https://github.com/nacho1706/omarchy-dock-window-counter) includes the root manifest, preview, documentation and marketplace submission draft. Listing requires separate owner review and marketplace approval.

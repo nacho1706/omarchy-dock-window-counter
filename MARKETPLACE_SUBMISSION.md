@@ -16,13 +16,11 @@ dock
 
 ### Maintainer notes
 
-Adds current-workspace window indicators to Omarchy's native floating dock: an outlined dot for one window and an exact count badge for multiple windows. Minimized windows count on their original workspace. Omarchy agent terminal aliases count with the configured terminal app.
+Independent, click-through indicators over an already-visible Omarchy native floating dock. A dot marks one window and a badge shows the exact count of multiple windows on the active workspace of each monitor. Minimized windows use their saved original workspace metadata. Agent terminals count with the configured terminal app.
 
-The stock-dock implementation is a user-owned fork of Omarchy's MIT-licensed native dock, with the upstream license preserved. An optional, explicitly invoked adapter supports the user-owned Genie 0.2.4 dock; it validates expected source anchors, creates backups, and makes no changes if the source layout is unsupported. It does not modify packaged Omarchy files. Disable/removal makes the Genie integration dormant; complete source restoration is documented.
+The plugin is a separate service: it does not replace a dock, launch apps, intercept input, or patch/import any other third-party plugin. Its ordering model is derived from Omarchy's MIT-licensed dock model, with attribution retained in UPSTREAM_LICENSE. No network polling, additional runtime packages, privileged operations, or configuration writes. The existing terminal-selection command is queried once.
 
-No additional runtime dependencies, network polling, elevated privileges, or external downloads. The adapter requires Python 3; Node.js is a development-only test dependency. Existing Omarchy commands continue to handle native app launching and dock settings.
-
-Live-tested on the Genie-equipped desktop. The standalone stock-dock path passes static/QML checks but has not been live-activated on that desktop; mixed DPI and alternate dock positions need broader testing. Details are in VERIFICATION.md.
+The manifest, release structure, nine model tests, Qt 6 syntax checks and live two-window workspace migration have been checked. Indicators require native dock geometry and hide with autohide/maximized/fullscreen workspaces. Detailed coverage and limits are in VERIFICATION.md.
 
 ### Submission checklist
 
