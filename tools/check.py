@@ -27,10 +27,10 @@ for path in root.rglob('*'):
 for name in ['README.md', 'LICENSE', 'dock/LICENSE', 'THIRD_PARTY_NOTICES.md', 'preview.png']:
     assert (root / name).is_file(), name
 readme = (root / 'README.md').read_text()
-assert 'omarchy plugin add https://github.com/nacho1706/omarchy-floating-apps' in readme
+assert 'omarchy plugin add https://github.com/nacho1706/omarchy-dock-window-counter' in readme
 assert 'omarchy plugin remove chato.floating-apps' in readme
 assert '<public-github-repository-url>' not in readme
 for snippet, target in [('workspace-helper.js', 'DockModel.js'), ('indicator.qml', 'DockWindow.qml'), ('terminal-resolver.qml', 'Dock.qml')]:
     assert (root / 'tools' / snippet).read_text().strip() in (root / 'dock' / target).read_text(), snippet + ' differs from bundled dock'
-assert 'https://github.com/nacho1706/omarchy-floating-apps' == manifest['homepage']
+assert 'https://github.com/nacho1706/omarchy-dock-window-counter' == manifest['homepage']
 print('Release structure, manifest, documentation, and adapter resources: OK')

@@ -1,6 +1,6 @@
-# Floating Apps
+# Dock Window Counter
 
-Subtle running indicators for Omarchy's native **floating dock**—the bottom-center app strip. Indicators count windows on **the active workspace**, independently on each monitor.
+Window counts and running indicators for Omarchy's native **floating dock**—the bottom-center app strip. Indicators count windows on **the active workspace**, independently on each monitor.
 
 ![Floating dock with workspace-local indicators](preview.png)
 
@@ -13,6 +13,8 @@ Subtle running indicators for Omarchy's native **floating dock**—the bottom-ce
 
 The dock keeps its native pins, menus, app grid, dragging, launch and activation behavior. Icons may still be present for apps running elsewhere; only the indicator and running brightness are workspace-local.
 
+The stable plugin ID remains `chato.floating-apps` for compatibility with existing installations.
+
 ## Requirements
 
 Omarchy Quattro with the Quickshell shell and Hyprland Lua dispatchers. This plugin includes an MIT-licensed snapshot of Omarchy's native dock and uses its existing theme, icon, translation, animation and reduced-motion APIs. No extra runtime dependencies, network requests, background polling, or privileged operations. Python 3 is required only for the optional Genie adapter; Node.js is required only for model tests.
@@ -20,10 +22,10 @@ Omarchy Quattro with the Quickshell shell and Hyprland Lua dispatchers. This plu
 ## Install on stock Omarchy
 
 ```sh
-omarchy plugin add https://github.com/nacho1706/omarchy-floating-apps --enable
+omarchy plugin add https://github.com/nacho1706/omarchy-dock-window-counter --enable
 ```
 
-The manifest declares a clone of `omarchy.dock`, so Omarchy disables the stock dock when enabling Floating Apps and restores it on removal when appropriate. Your top status bar is unaffected. Dock placement, pins, and autohide continue to use Omarchy's normal dock settings.
+The manifest declares a clone of `omarchy.dock`, so Omarchy disables the stock dock when enabling Dock Window Counter and restores it on removal when appropriate. Your top status bar is unaffected. Dock placement, pins, and autohide continue to use Omarchy's normal dock settings.
 
 For a local checkout, copy this folder (not a symlink) to `~/.config/omarchy/plugins/chato.floating-apps/`, then:
 
@@ -37,7 +39,7 @@ If discovery has not finished yet, retry enable once the plugin appears in `omar
 
 ## Install with Genie 0.2.4
 
-Genie already owns an extended native dock and its animation targets. Floating Apps detects that enabled service and avoids creating another dock. Apply the optional adapter to Genie's **user-owned** dock copy:
+Genie already owns an extended native dock and its animation targets. Dock Window Counter detects that enabled service and avoids creating another dock. Apply the optional adapter to Genie's **user-owned** dock copy:
 
 ```sh
 python3 ~/.config/omarchy/plugins/chato.floating-apps/tools/genie-adapter.py
@@ -45,7 +47,7 @@ omarchy plugin enable chato.floating-apps
 omarchy restart shell
 ```
 
-The adapter validates expected source anchors and backs up changed dock files as `*.before-floating-apps-<timestamp>` before editing. Unknown source layouts are refused without changes. It is idempotent and adds self-contained indicator code; disabling/removing Floating Apps makes that code dormant. It never edits packaged Omarchy files. Restarting the shell applies nested dock QML/JS changes and clears any in-memory Genie animation snapshots.
+The adapter validates expected source anchors and backs up changed dock files as `*.before-floating-apps-<timestamp>` before editing. Unknown source layouts are refused without changes. It is idempotent and adds self-contained indicator code; disabling/removing Dock Window Counter makes that code dormant. It never edits packaged Omarchy files. Restarting the shell applies nested dock QML/JS changes and clears any in-memory Genie animation snapshots.
 
 The adapter preserves Genie's native activation and minimize/restore behavior. Updates to Genie may replace its dock files; rerun the adapter afterward. Other third-party dock replacements require their own integration and are not supported.
 
@@ -75,4 +77,4 @@ Model tests cover workspace isolation, duplicate counts, stock and Genie minimiz
 
 ## Marketplace
 
-One plugin, root manifest, README, preview, MIT license, third-party attribution and documented safe removal are included. See `MARKETPLACE.md` for publishing metadata and remaining steps. The public repository and tagged release are hosted at [nacho1706/omarchy-floating-apps](https://github.com/nacho1706/omarchy-floating-apps). Marketplace listing requires a separate submission and maintainer approval.
+One plugin, root manifest, README, preview, MIT license, third-party attribution and documented safe removal are included. See `MARKETPLACE.md` for publishing metadata and remaining steps. The public repository and tagged release are hosted at [nacho1706/omarchy-dock-window-counter](https://github.com/nacho1706/omarchy-dock-window-counter). Marketplace listing requires a separate submission and maintainer approval.

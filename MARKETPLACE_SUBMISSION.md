@@ -1,6 +1,6 @@
 ### Repository URL
 
-https://github.com/nacho1706/omarchy-floating-apps
+https://github.com/nacho1706/omarchy-dock-window-counter
 
 ### Category
 

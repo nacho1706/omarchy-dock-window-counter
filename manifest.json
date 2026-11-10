@@ -1,8 +1,8 @@
 {
   "schemaVersion": 1,
   "id": "chato.floating-apps",
-  "name": "Floating Apps",
-  "version": "1.0.2",
+  "name": "Dock Window Counter",
+  "version": "1.0.3",
   "author": "Chato",
   "license": "MIT",
   "description": "Subtle current-workspace running indicators and window counts in the native floating dock.",
@@ -15,5 +15,5 @@
   "omarchy": {
     "clonedFrom": "omarchy.dock"
   },
-  "homepage": "https://github.com/nacho1706/omarchy-floating-apps"
+  "homepage": "https://github.com/nacho1706/omarchy-dock-window-counter"
 }

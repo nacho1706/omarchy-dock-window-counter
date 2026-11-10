@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3 — 2026-11-10
+
+- Renamed the plugin to Dock Window Counter and the repository to `omarchy-dock-window-counter`.
+- Updated installation links and marketplace metadata. The stable plugin ID and dock behavior are unchanged.
+
 ## 1.0.2 — 2026-11-10
 
 Initial public release.
